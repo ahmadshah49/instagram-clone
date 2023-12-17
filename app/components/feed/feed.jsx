@@ -49,12 +49,14 @@ const Feed = () => {
 
   <input type="search" name='search' id='search' placeholder='Search' className=' bg-gray-100  px-2 outline-none' />
 </div>
-<div className='flex space-x-4 '>
+<div className='flex items-center ml-32 space-x-4 '>
   {
     ICONS.map((icon)=>(
-<NavbarIcon Icon={icon.icon}/>
+<NavbarIcon Icon={icon.icon}
+key={icon.name}/>
     ))
   }
+  <button className='bg-[#57bcfe] hover:bg-[#0095F6] text-white py-1 px-8 rounded-md font-semibold active:scale-95 transform transition disabled:bg-[#99d6ff] disabled:scale-100'>Log in</button>
 </div>
 </header>
     </div>

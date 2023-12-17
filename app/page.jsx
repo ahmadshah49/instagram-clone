@@ -4,7 +4,7 @@ import Authentication from './components/authentication'
 import Feed from './components/feed/feed';
 
 const Home = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(true)
   return isAuthenticated ? <Feed/>:  <Authentication/>;
 }
 
