@@ -1,7 +1,40 @@
 import Image from 'next/image'
+import NavbarIcon from '../NavbarIcon/NavbarIcon.jsx';
 import { BsSearch } from "react-icons/bs";
 import {Home,Add,Heart,Cross,Compass,Search,Messenger,Profile} from '../../components/navbarIcons/navbarIcons.jsx'
 const Feed = () => {
+  const ICONS=[
+    {
+      icon:Home,
+      url:"/",
+      name:"Home"
+    },
+    {
+      icon:Messenger,
+      url:"/",
+      name:"Messenger"
+    },
+    {
+      icon:Add,
+      url:"/",
+      name:"Add"
+    },
+    {
+      icon:Compass,
+      url:"/",
+      name:"Compass"
+    },
+    {
+      icon:Heart,
+      url:"/",
+      name:"Heart"
+    },
+    {
+      icon:Profile,
+      url:"/",
+      name:"Profile"
+    },
+  ]
   return (
     <div className='w-full h-screen'>
 <header className='w-full h-14 shadow-md flex justify-around items-center'>
@@ -16,7 +49,13 @@ const Feed = () => {
 
   <input type="search" name='search' id='search' placeholder='Search' className=' bg-gray-100  px-2 outline-none' />
 </div>
-<div>3</div>
+<div className='flex space-x-4 '>
+  {
+    ICONS.map((icon)=>(
+<NavbarIcon Icon={icon.icon}/>
+    ))
+  }
+</div>
 </header>
     </div>
   )
