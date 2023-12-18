@@ -43,8 +43,8 @@ const Header = () => {
 
   // Return JSX for the Feed component
   return (
-    <div>
-      <header className='w-full h-14 shadow-md flex justify-around items-center'>
+    <div className='fixed w-full top-0 bg-white z-50'>
+      <header className=' w-full h-14 shadow-md flex justify-around items-center'>
         {/* Image component */}
         <div>
           <Image
@@ -68,7 +68,7 @@ const Header = () => {
             <NavbarIcon Icon={icon.icon} key={icon.name} />
           ))}
           <button className='bg-[#57bcfe] hover:bg-[#0095F6] text-white py-1 px-8 rounded-md font-semibold active:scale-95 transform transition disabled:bg-[#99d6ff] disabled:scale-100'>
-            Log in
+            Log out
           </button>
         </div>
       </header>
