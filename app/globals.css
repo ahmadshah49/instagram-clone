@@ -3,3 +3,8 @@
 @tailwind utilities;
 
 
+
+.carousel-body::-webkit-scrollbar {
+    display: none;
+  }
+  
