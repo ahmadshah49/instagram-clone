@@ -17,7 +17,7 @@ const Post = ({postIndex}) => {
                     <HiOutlineDotsHorizontal size={20} />
                 </div>
             </div>
-            <div className="my-2 bg-black aspect-video" />
+            <div className="my-2 bg-black aspect-square" />
             <div className="flex justify-between p-2">
                 <div className="flex items-center space-x-4">
                     <div><FaRegHeart size={20}/></div>
