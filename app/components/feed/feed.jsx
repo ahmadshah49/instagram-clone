@@ -40,8 +40,8 @@ const Feed = () => {
             <div
             ref={sliderRef}
             className='carousel-body scroll-smooth flex  p-4 bg-white border  space-x-5 overflow-x-scroll'>
-              {new Array(20).fill(0).map((_, index) => <div
-                key={index}
+              {new Array(20).fill(0).map((_, i) => <div
+                key={i}
                 className='h-14 w-14 flex-none cursor-pointer bg-black/40 rounded-full ring ring-pink-600 ring-offset-2 '>
 
               </div>
@@ -51,7 +51,7 @@ const Feed = () => {
           </section>
           <section>
        {new Array(5).fill(1).map((_,i)=>(
-            <Post postIndex="index"/>
+            <Post key={i} postIndex="index"/>
        ))}
           </section>
         </div>
