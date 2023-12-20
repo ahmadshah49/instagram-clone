@@ -35,7 +35,7 @@ const Post = ({postIndex}) => {
                <div>
                  {
                      new Array(3).fill(0).map((_,i)=>(
-                         <div className="flex space-x-2 p-2">
+                         <div key={i} className="flex space-x-2 p-2">
                             <div className="font-semibold">username</div>
                             <div key={i}>This is Comment {i + 1}</div>
                         </div>
