@@ -3,12 +3,12 @@ import {getFirestore} from "firebase/firestore"
 import {getAuth} from "firebase/auth"
 import {getStorage} from "firebase/storage"
 const firebaseConfig = {
-  apiKey: "AIzaSyD422VRhzAZye9BA3FVmguSce0kdDIeCwE",
-  authDomain: "instagram-clone-e702c.firebaseapp.com",
-  projectId: "instagram-clone-e702c",
-  storageBucket: "instagram-clone-e702c.appspot.com",
-  messagingSenderId: "764161146861",
-  appId: "1:764161146861:web:f0a04ba6382480fe7631e4"
+  apiKey: "AIzaSyDKko2Dp4O-yOMxfa0rRwYARmrkewqcrZg",
+  authDomain: "instagram-11fc5.firebaseapp.com",
+  projectId: "instagram-11fc5",
+  storageBucket: "instagram-11fc5.appspot.com",
+  messagingSenderId: "888026836980",
+  appId: "1:888026836980:web:8a614cf6ffc5eff34293a1"
 };
 const app = !getApps().length ? initializeApp(firebaseConfig):getApp();
 const db= getFirestore();

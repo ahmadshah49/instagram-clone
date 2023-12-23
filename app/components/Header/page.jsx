@@ -3,7 +3,8 @@ import Image from 'next/image';
 import { BsSearch } from 'react-icons/bs';
 import { Home, Add, Heart, Cross, Compass, Search, Messenger, Profile } from './navbarIcons/navbarIcons';
 import NavbarIcon from './NavbarIcon/NavbarIcon';
-
+import { signOut } from 'firebase/auth';
+import { auth } from '@/app/lib/db';
 // Define the Feed component
 const Header = () => {
   // Array of icon objects
@@ -42,6 +43,10 @@ const Header = () => {
   ];
 
   // Return JSX for the Feed component
+  const onChangeLogout = async ()=>{
+    await signOut(auth)
+    window.location.reload()
+  }
   return (
     <div className='fixed w-full top-0 bg-white z-50'>
       <header className=' w-full h-14 shadow-md flex justify-around items-center'>
@@ -68,7 +73,7 @@ const Header = () => {
           {ICONS.map((icon) => (
             <NavbarIcon Icon={icon.icon} key={icon.name} />
           ))}
-          <button className='bg-[#57bcfe] hover:bg-[#0095F6] text-white py-1 px-8 rounded-md font-semibold active:scale-95 transform transition disabled:bg-[#99d6ff] disabled:scale-100'>
+          <button onClick={onChangeLogout} className='bg-[#57bcfe] hover:bg-[#0095F6] text-white py-1 px-8 rounded-md font-semibold active:scale-95 transform transition disabled:bg-[#99d6ff] disabled:scale-100'>
             Log out
           </button>
         </div>
