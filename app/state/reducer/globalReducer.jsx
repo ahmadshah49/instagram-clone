@@ -23,6 +23,12 @@ export const globalReducer=(state,action)=>{
                 ...state,
                 isOnboarded:action.payload.isOnboarded,
             }
+        };
+        case 'SET_IS_UPLOAD_POST_MODAL_OPEN':{
+            return{
+                ...state,
+                setIsUploadPostOpen:action.payload.setIsUploadPostOpen,
+            }
         }
             
     

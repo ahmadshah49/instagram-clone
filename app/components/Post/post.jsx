@@ -45,7 +45,7 @@ const Post = ({postIndex}) => {
             </div>
             <div className="p-2">3 Hours Ago</div>
           <form onSubmit={(e)=>e.preventDefault()}>
-          <div className="p-2 flex items-center border border-t py-4 justify-between">
+          <div className="p-2 flex items-center  border-t py-4 justify-between">
                 <div className="flex items-center space-x-2">
                     <div><RiEmotionHappyLine size={30} /></div>
                     <input type="text" name={`commment ${postIndex}`} id={`commment ${postIndex}`} placeholder="Add a Comment..." className="w-full outline-none" />

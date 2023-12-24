@@ -3,11 +3,24 @@ import Header from '../Header/page'
 import { FaArrowCircleRight } from "react-icons/fa";
 import { FaArrowCircleLeft } from "react-icons/fa";
 import '@/app/globals.css'
-import { useRef } from 'react';
+import { useContext, useRef, useState } from 'react';
 import Post from '../Post/post';
+import Modal from '../Modal/Modal';
+import { GlobalContext, GlobalContextDispatch } from '@/app/state/context/globalContextProvider';
 const Feed = () => {
-  const sliderRef = useRef(null);
+  const {setIsUploadPostOpen} = useContext(GlobalContext)
+  const dispatch = useContext(GlobalContextDispatch)
+const closeModal=()=>{
+  dispatch({
+    type:'SET_IS_UPLOAD_POST_MODAL_OPEN',
+    payload:{
+      setIsUploadPostOpen:false,
+    }
+  });
 
+}
+
+  const sliderRef = useRef(null);
   const handleWheelScroll = (e) => {
     const delta = e.deltaY;
     sliderRef.current.scrollLeft += delta;
@@ -26,6 +39,12 @@ const Feed = () => {
   return (
     <div>
       <Header />
+      <Modal closeModal={closeModal} isOpen={setIsUploadPostOpen}>
+        <div>
+          This is Modal Component
+        </div>
+      </Modal>
+
       <div className='w-full max-w-screen-lg  mt-20 mx-auto grid grid-cols-3 gap-4'>
         <div className='col-span-2  '>
           <section className='relative 'onWheel={handleWheelScroll} >

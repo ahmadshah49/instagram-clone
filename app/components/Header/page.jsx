@@ -71,7 +71,7 @@ const Header = () => {
         {/* Navbar icons and login button */}
         <div className='flex items-center space-x-4'>
           {ICONS.map((icon) => (
-            <NavbarIcon Icon={icon.icon} key={icon.name} />
+            <NavbarIcon Icon={icon.icon}name={icon.name} key={icon.name} />
           ))}
           <button onClick={onChangeLogout} className='bg-[#57bcfe] hover:bg-[#0095F6] text-white py-1 px-8 rounded-md font-semibold active:scale-95 transform transition disabled:bg-[#99d6ff] disabled:scale-100'>
             Log out
