@@ -38,6 +38,12 @@ const GlobalContextProvider = ({ children }) => {
  const userData= await  fetchUser();
  if (userData) {
   dispatch({
+    type: 'SET_USER',
+    payload: {
+      user: userData,
+    },
+  });
+  dispatch({
     type: 'SET_IS_ONBOARDED',
     payload: {
       isOnboarded: true

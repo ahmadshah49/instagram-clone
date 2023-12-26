@@ -6,8 +6,12 @@ import '@/app/globals.css'
 import { useContext, useEffect, useRef, useState } from 'react';
 import Post from '../Post/post';
 import Modal from '../Modal/Modal';
-import { GlobalContext, GlobalContextDispatch } from '@/app/state/context/globalContextProvider';
+import GlobalContextProvider, { GlobalContext, GlobalContextDispatch } from '@/app/state/context/globalContextProvider';
 import toast from 'react-hot-toast';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { db, storage } from '@/app/lib/db';
+import {v4 as uuidv4} from 'uuid'
+import { doc, setDoc } from 'firebase/firestore';
 const Feed = () => {
   const { setIsUploadPostOpen } = useContext(GlobalContext)
   const dispatch = useContext(GlobalContextDispatch)
@@ -40,6 +44,8 @@ const Feed = () => {
   const [file, setFile] = useState('')
   const [media, setMedia] = useState({
     src: '',
+    isUploading:false,
+    caption:''
   })
 
   useEffect(() => {
@@ -73,9 +79,53 @@ const handleRemovePost=()=>{
   setFile('')
   currentImage.current.src='';
 }
-const handleUploadPost=async()=>{
-
+const {user} = useContext(GlobalContext)
+const handlePostMedia=async(url)=>{
+const postId= uuidv4()
+const postRef=doc(db,'posts',postId)
+const post={
+  id:postId,
+  image:url,
+  caption:media.caption,
+  username:user.username ,
 }
+try {
+  await setDoc(postRef,post);
+} catch (error) {
+  console.log(error);
+  toast.error('error posting the Image')
+}
+}
+const handleUploadPost = async () => {
+  if (!file) return toast.error("Please select a post");
+
+  setMedia((prev) => ({ ...prev, isUploading: true }));
+  const toastid = toast.loading("Uploading your Post, please wait...");
+  const storageRef = ref(storage, "post/", Date.now() + "-" + file.name);
+
+  try {
+    const uploadTask = await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(uploadTask.ref);
+   await handlePostMedia(url)
+    toast.success('Image uploaded', {
+      id: toastid,
+    });
+  } catch (error) {
+    toast.error('Failed to upload image', {
+      id: toastid,
+    });
+   
+  } finally {
+    setMedia({
+      src: '',
+      isUploading: false,
+      caption:''
+    });
+    setFile('');
+    closeModal();
+  }
+};
+
   return (
     <div>
       <Header />
@@ -94,7 +144,7 @@ const handleUploadPost=async()=>{
                     }}
                     className='hidden'
                     type="file"
-                    value={file.filename}
+                    value={file.name}
                     name='post'
                     id='post'
                     multiple={false}
@@ -103,7 +153,13 @@ const handleUploadPost=async()=>{
                 <div className='flex flex-col gap-6 items-center justify-center'>
                   <input type='image' src={media.src} className='w-80 object-cover'ref={currentImage}
                   />
-                  <input type="text" name='caption' id='caption' placeholder='Add caption' className='w-full border-2 border-black/40 rounded outline-none p-2 '/>
+                  <input type="text" name='caption' 
+                  id='caption' 
+                  placeholder='Add caption' 
+                  className='w-full border-2 border-black/40 rounded outline-none p-2 '
+                  onChange={(e)=>setMedia((prev)=>({...prev,caption:e.target.value}))}
+                  value={media.caption}
+                  />
                   <div className='flex space-x-2'>
                     <button className='bg-[#0095F6] text-white py-2 px-8 rounded-md font-semibold active:scale-95 transform transition disabled:bg-[#99d6ff] disabled:scale-100' onClick={handleRemovePost}>Remove</button>
                     <button className='bg-[#0095F6] text-white py-2 px-8 rounded-md font-semibold active:scale-95 transform transition disabled:bg-[#99d6ff] disabled:scale-100' onClick={handleUploadPost}>upload</button>
