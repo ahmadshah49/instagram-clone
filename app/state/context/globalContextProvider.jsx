@@ -9,7 +9,7 @@ const intialState = {
   user: {},
   isAuthenticated: false,
   isOnboarded: false,
-  isLoading: true,
+  isLoading: false,
   setIsUploadPostOpen:false,
 }
 export const GlobalContext = createContext(intialState)

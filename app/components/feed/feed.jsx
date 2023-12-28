@@ -11,7 +11,7 @@ import toast from 'react-hot-toast';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { db, storage } from '@/app/lib/db';
 import {v4 as uuidv4} from 'uuid'
-import { doc, setDoc } from 'firebase/firestore';
+import { collection, doc, onSnapshot, orderBy, query, serverTimestamp, setDoc } from 'firebase/firestore';
 const Feed = () => {
   const { setIsUploadPostOpen } = useContext(GlobalContext)
   const dispatch = useContext(GlobalContextDispatch)
@@ -80,6 +80,7 @@ const handleRemovePost=()=>{
   currentImage.current.src='';
 }
 const {user} = useContext(GlobalContext)
+
 const handlePostMedia=async(url)=>{
 const postId= uuidv4()
 const postRef=doc(db,'posts',postId)
@@ -88,11 +89,12 @@ const post={
   image:url,
   caption:media.caption,
   username:user.username ,
+  createdAt:serverTimestamp()
 }
 try {
   await setDoc(postRef,post);
 } catch (error) {
-  console.log(error);
+
   toast.error('error posting the Image')
 }
 }
@@ -101,11 +103,12 @@ const handleUploadPost = async () => {
 
   setMedia((prev) => ({ ...prev, isUploading: true }));
   const toastid = toast.loading("Uploading your Post, please wait...");
-  const storageRef = ref(storage, "post/", Date.now() + "-" + file.name);
+  const postName=`posts/${uuidv4()}-${file.name}`
+  const storageRef = ref(storage, postName,);
 
   try {
     const uploadTask = await uploadBytes(storageRef, file);
-    const url = await getDownloadURL(uploadTask.ref);
+    const url = await getDownloadURL (uploadTask.ref);
    await handlePostMedia(url)
     toast.success('Image uploaded', {
       id: toastid,
@@ -119,12 +122,25 @@ const handleUploadPost = async () => {
     setMedia({
       src: '',
       isUploading: false,
-      caption:''
+     caption:''
     });
     setFile('');
     closeModal();
   }
 };
+const [posts, setPosts] = useState([])
+const [loading, setLoading] = useState(false)
+useEffect(() => {
+  setLoading(true)
+  const postCollection=collection(db,'posts')
+const q =query(postCollection,orderBy('createdAt','desc'))
+onSnapshot(q,(snapshot)=>{
+  const posts=snapshot.docs.map((doc)=>doc.data())
+  setPosts(posts)
+setLoading(false)
+})
+}, [])
+console.log(posts);
 
   return (
     <div>
@@ -136,7 +152,7 @@ const handleUploadPost = async () => {
             {!file ?
               (
                 <>
-
+ 
                   <label htmlFor="post" className='bg-[#0095F6] text-white py-2 px-8 rounded-md font-semibold active:scale-95 transform transition disabled:bg-[#99d6ff] disabled:scale-100'>Select From Computer</label>
                   <input
                     onChange={(e) => {
@@ -175,10 +191,10 @@ const handleUploadPost = async () => {
         <div className='col-span-2  '>
           <section className='relative ' onWheel={handleWheelScroll} >
 
-            <div className='absolute flex items-center justify-center top-10 left-3 text-black/80'>
+            <div className='absolute flex items-center justify-center top-10 left-3 text-white/80'>
               <FaArrowCircleLeft size={25} onClick={() => handleSlide('left')} />
             </div>
-            <div className='absolute flex items-center justify-center top-10 right-3 text-black/80'>
+            <div className='absolute flex items-center justify-center top-10 right-3 text-white/80'>
               <FaArrowCircleRight size={25} onClick={() => handleSlide('right')} />
             </div>
 
@@ -187,7 +203,7 @@ const handleUploadPost = async () => {
               className='carousel-body scroll-smooth flex  p-4 bg-white border  space-x-5 overflow-x-scroll'>
               {new Array(20).fill(0).map((_, i) => <div
                 key={i}
-                className='h-14 w-14 flex-none cursor-pointer bg-black/40 rounded-full ring ring-pink-600 ring-offset-2 '>
+                className='h-14 w-14 flex-none cursor-pointer bg-black rounded-full ring ring-pink-600 ring-offset-2 '>
 
               </div>
               )}
@@ -195,8 +211,8 @@ const handleUploadPost = async () => {
 
           </section>
           <section>
-            {new Array(5).fill(1).map((_, i) => (
-              <Post key={i} postIndex="index" />
+            {posts.map((post) => (
+              <Post key={post.id} {...post} />
             ))}
           </section>
         </div>
