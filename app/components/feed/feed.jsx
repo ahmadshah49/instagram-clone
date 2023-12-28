@@ -10,7 +10,7 @@ import GlobalContextProvider, { GlobalContext, GlobalContextDispatch } from '@/a
 import toast from 'react-hot-toast';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { db, storage } from '@/app/lib/db';
-import {v4 as uuidv4} from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import { collection, doc, onSnapshot, orderBy, query, serverTimestamp, setDoc } from 'firebase/firestore';
 const Feed = () => {
   const { setIsUploadPostOpen } = useContext(GlobalContext)
@@ -44,8 +44,8 @@ const Feed = () => {
   const [file, setFile] = useState('')
   const [media, setMedia] = useState({
     src: '',
-    isUploading:false,
-    caption:''
+    isUploading: false,
+    caption: ''
   })
 
   useEffect(() => {
@@ -74,73 +74,73 @@ const Feed = () => {
       reader.removeEventListener("error", handleEvent)
     }
   }, [file])
-const currentImage = useRef(null)
-const handleRemovePost=()=>{
-  setFile('')
-  currentImage.current.src='';
-}
-const {user} = useContext(GlobalContext)
-
-const handlePostMedia=async(url)=>{
-const postId= uuidv4()
-const postRef=doc(db,'posts',postId)
-const post={
-  id:postId,
-  image:url,
-  caption:media.caption,
-  username:user.username ,
-  createdAt:serverTimestamp()
-}
-try {
-  await setDoc(postRef,post);
-} catch (error) {
-
-  toast.error('error posting the Image')
-}
-}
-const handleUploadPost = async () => {
-  if (!file) return toast.error("Please select a post");
-
-  setMedia((prev) => ({ ...prev, isUploading: true }));
-  const toastid = toast.loading("Uploading your Post, please wait...");
-  const postName=`posts/${uuidv4()}-${file.name}`
-  const storageRef = ref(storage, postName,);
-
-  try {
-    const uploadTask = await uploadBytes(storageRef, file);
-    const url = await getDownloadURL (uploadTask.ref);
-   await handlePostMedia(url)
-    toast.success('Image uploaded', {
-      id: toastid,
-    });
-  } catch (error) {
-    toast.error('Failed to upload image', {
-      id: toastid,
-    });
-   
-  } finally {
-    setMedia({
-      src: '',
-      isUploading: false,
-     caption:''
-    });
-    setFile('');
-    closeModal();
+  const currentImage = useRef(null)
+  const handleRemovePost = () => {
+    setFile('')
+    currentImage.current.src = '';
   }
-};
-const [posts, setPosts] = useState([])
-const [loading, setLoading] = useState(false)
-useEffect(() => {
-  setLoading(true)
-  const postCollection=collection(db,'posts')
-const q =query(postCollection,orderBy('createdAt','desc'))
-onSnapshot(q,(snapshot)=>{
-  const posts=snapshot.docs.map((doc)=>doc.data())
-  setPosts(posts)
-setLoading(false)
-})
-}, [])
-console.log(posts);
+  const { user } = useContext(GlobalContext)
+
+  const handlePostMedia = async (url) => {
+    const postId = uuidv4()
+    const postRef = doc(db, 'posts', postId)
+    const post = {
+      id: postId,
+      image: url,
+      caption: media.caption,
+      username: user.username,
+      createdAt: serverTimestamp()
+    }
+    try {
+      await setDoc(postRef, post);
+    } catch (error) {
+
+      toast.error('error posting the Image')
+    }
+  }
+  const handleUploadPost = async () => {
+    if (!file) return toast.error("Please select a post");
+
+    setMedia((prev) => ({ ...prev, isUploading: true }));
+    const toastid = toast.loading("Uploading your Post, please wait...");
+    const postName = `posts/${uuidv4()}-${file.name}`
+    const storageRef = ref(storage, postName,);
+
+    try {
+      const uploadTask = await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(uploadTask.ref);
+      await handlePostMedia(url)
+      toast.success('Image uploaded', {
+        id: toastid,
+      });
+    } catch (error) {
+      toast.error('Failed to upload image', {
+        id: toastid,
+      });
+
+    } finally {
+      setMedia({
+        src: '',
+        isUploading: false,
+        caption: ''
+      });
+      setFile('');
+      closeModal();
+    }
+  };
+  const [posts, setPosts] = useState([])
+  const [loading, setLoading] = useState(false)
+  useEffect(() => {
+    setLoading(true)
+    const postCollection = collection(db, 'posts')
+    const q = query(postCollection, orderBy('createdAt', 'desc'))
+    onSnapshot(q, (snapshot) => {
+      const posts = snapshot.docs.map((doc) => doc.data())
+      setPosts(posts)
+      setLoading(false)
+    })
+  }, [])
+  console.log(posts);
 
   return (
     <div>
@@ -152,7 +152,7 @@ console.log(posts);
             {!file ?
               (
                 <>
- 
+
                   <label htmlFor="post" className='bg-[#0095F6] text-white py-2 px-8 rounded-md font-semibold active:scale-95 transform transition disabled:bg-[#99d6ff] disabled:scale-100'>Select From Computer</label>
                   <input
                     onChange={(e) => {
@@ -167,14 +167,14 @@ console.log(posts);
                     accept="image/jpeg,image/png"
                   /></>) : (
                 <div className='flex flex-col gap-6 items-center justify-center'>
-                  <input type='image' src={media.src} className='w-80 object-cover'ref={currentImage}
+                  <input type='image' src={media.src} className='w-80 object-cover' ref={currentImage}
                   />
-                  <input type="text" name='caption' 
-                  id='caption' 
-                  placeholder='Add caption' 
-                  className='w-full border-2 border-black/40 rounded outline-none p-2 '
-                  onChange={(e)=>setMedia((prev)=>({...prev,caption:e.target.value}))}
-                  value={media.caption}
+                  <input type="text" name='caption'
+                    id='caption'
+                    placeholder='Add caption'
+                    className='w-full border-2 border-black/40 rounded outline-none p-2 '
+                    onChange={(e) => setMedia((prev) => ({ ...prev, caption: e.target.value }))}
+                    value={media.caption}
                   />
                   <div className='flex space-x-2'>
                     <button className='bg-[#0095F6] text-white py-2 px-8 rounded-md font-semibold active:scale-95 transform transition disabled:bg-[#99d6ff] disabled:scale-100' onClick={handleRemovePost}>Remove</button>
@@ -216,8 +216,98 @@ console.log(posts);
             ))}
           </section>
         </div>
-        <section className='col-span-1 bg-red-300 fixed right-[4%] max-w-sm'>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia vero quos voluptatem nobis sequi quae excepturi. Aperiam amet dolor odio, dolores nobis doloribus neque omnis iste reprehenderit ducimus libero repellendus necessitatibus quasi dolore ratione pariatur illo obcaecati! Hic mollitia voluptatum quos iusto et minus quia voluptatibus voluptates labore atque ipsa rem debitis provident sit delectus, ipsum corrupti voluptas assumenda dolorem harum facilis animi officia! Enim iure ipsum temporibus nihil, est consequatur, dolor vero maxime assumenda harum quos voluptates, commodi beatae corporis repellat quod. Excepturi quibusdam incidunt laboriosam facilis quasi, quae itaque, provident, odio maiores nostrum accusamus. Adipisci dolor recusandae inventore?
+        <section className='col-span-1 fixed right-[2%] w-80'>
+          <div className='flex gap-4 items-center'>
+            <div className='w-16 h-16 rounded-full bg-gray-400' />
+            <div className='flex flex-col'>
+              <span className='font-bold'>UserName</span>
+              <span className='font-light'>Name</span>
+            </div>
+          </div>
+          <div className='flex justify-between items-center mt-4'>
+            <span className='text-sm text-gray-600 font-extrabold'>Suggested for you</span>
+            <span className='text-sm'>See All</span>
+          </div>
+         <div className='flex justify-between items-center my-3'>
+            <div className='flex gap-2'>
+            <div className='w-10 h-10 rounded-full bg-gray-400' />
+            <div className='flex flex-col gap-0'>
+              <span className='font-bold text-sm'>UserName</span>
+              <span className='font-light text-sm'>Name</span>
+            </div>
+            </div>
+            <div className='text-sm text-[#0095CF]'>Follow</div>
+          </div> 
+         <div className='flex justify-between items-center my-3'>
+            <div className='flex gap-2'>
+            <div className='w-10 h-10 rounded-full bg-gray-400' />
+            <div className='flex flex-col gap-0'>
+              <span className='font-bold text-sm'>UserName</span>
+              <span className='font-light text-sm'>Name</span>
+            </div>
+            </div>
+            <div className='text-sm text-[#0095CF]'>Follow</div>
+          </div> 
+         <div className='flex justify-between items-center my-3'>
+            <div className='flex gap-2'>
+            <div className='w-10 h-10 rounded-full bg-gray-400' />
+            <div className='flex flex-col gap-0'>
+              <span className='font-bold text-sm'>UserName</span>
+              <span className='font-light text-sm'>Name</span>
+            </div>
+            </div>
+            <div className='text-sm text-[#0095CF]'>Follow</div>
+          </div> 
+         <div className='flex justify-between items-center my-3'>
+            <div className='flex gap-2'>
+            <div className='w-10 h-10 rounded-full bg-gray-400' />
+            <div className='flex flex-col gap-0'>
+              <span className='font-bold text-sm'>UserName</span>
+              <span className='font-light text-sm'>Name</span>
+            </div>
+            </div>
+            <div className='text-sm text-[#0095CF]'>Follow</div>
+          </div> 
+         <div className='flex justify-between items-center my-3'>
+            <div className='flex gap-2'>
+            <div className='w-10 h-10 rounded-full bg-gray-400' />
+            <div className='flex flex-col gap-0'>
+              <span className='font-bold text-sm'>UserName</span>
+              <span className='font-light text-sm'>Name</span>
+            </div>
+            </div>
+            <div className='text-sm text-[#0095CF]'>Follow</div>
+          </div> 
+         <div className='flex justify-between items-center my-3'>
+            <div className='flex gap-2'>
+            <div className='w-10 h-10 rounded-full bg-gray-400' />
+            <div className='flex flex-col gap-0'>
+              <span className='font-bold text-sm'>UserName</span>
+              <span className='font-light text-sm'>Name</span>
+            </div>
+            </div>
+            <div className='text-sm text-[#0095CF]'>Follow</div>
+          </div> 
+         <div className='flex justify-between items-center my-3'>
+            <div className='flex gap-2'>
+            <div className='w-10 h-10 rounded-full bg-gray-400' />
+            <div className='flex flex-col gap-0'>
+              <span className='font-bold text-sm'>UserName</span>
+              <span className='font-light text-sm'>Name</span>
+            </div>
+            </div>
+            <div className='text-sm text-[#0095CF]'>Follow</div>
+          </div> 
+         <div className='flex justify-between items-center my-3'>
+            <div className='flex gap-2'>
+            <div className='w-10 h-10 rounded-full bg-gray-400' />
+            <div className='flex flex-col gap-0'>
+              <span className='font-bold text-sm'>UserName</span>
+              <span className='font-light text-sm'>Name</span>
+            </div>
+            </div>
+            <div className='text-sm text-[#0095CF]'>Follow</div>
+          </div> 
         </section>
       </div>
     </div>

@@ -5,13 +5,15 @@ import { FaRegComment } from "react-icons/fa";
 import { TbLocationShare } from "react-icons/tb";
 import { VscBookmark } from "react-icons/vsc";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai'
 import { auth, db } from "@/app/lib/db";
-import { collection, deleteDoc, doc, onSnapshot, query, setDoc, updateDoc, where } from "firebase/firestore";
-
+import { collection, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore";
+import { GlobalContext } from "@/app/state/context/globalContextProvider";
+import { v4 as uuidv4 } from 'uuid'
 const Post = ({ id, username, caption, image, likeCount }) => {
     const [like, setLike] = useState(false)
+    const [comments, setComments] = useState([]);
     const handleLikePost = async () => {
         const postLike = {
             postId: id,
@@ -24,7 +26,7 @@ const Post = ({ id, username, caption, image, likeCount }) => {
 
         if (like) {
 
-            await deleteDoc(likeRef);+
+            await deleteDoc(likeRef);
             if (likeCount) {
                 updatedLikesCount = likeCount - 1
             } else {
@@ -41,7 +43,7 @@ const Post = ({ id, username, caption, image, likeCount }) => {
                 updatedLikesCount = 1
             }
             await updateDoc(postRef, {
-                likeCount: updatedLikesCount ,
+                likeCount: updatedLikesCount,
             })
         }
     };
@@ -60,11 +62,34 @@ const Post = ({ id, username, caption, image, likeCount }) => {
                 setLike(false)
             }
         })
+        const commentRef=collection(db,`posts/${id}/comments`)
+        const commentQuery=query(commentRef,orderBy('createdAt','desc'));
+
+        const unsubcribeComment=onSnapshot(commentQuery,(snapshot)=>{
+            const comments=snapshot.docs.map((doc)=>doc.data());
+            setComments(comments)
+        })
         return () => {
             unsubcribeLikes()
+            unsubcribeComment()
         }
     }, [id])
 
+    const comment = useRef(null)
+    const { user } = useContext(GlobalContext)
+    const handlePostComment = async (e) => {
+        e.preventDefault();
+        const commentData = {
+            id: uuidv4(),
+            username: user.username,
+            comment: comment.current.value,
+            createdAt: serverTimestamp(),
+        };
+        comment.current.value = '';
+        const commentRef = doc(db, `posts/${id}/comments/${commentData.id}`);
+        await setDoc(commentRef, commentData)
+
+    }
     return (
         <>
 
@@ -107,21 +132,28 @@ const Post = ({ id, username, caption, image, likeCount }) => {
                 <div>
                     <div>
                         {
-                            new Array(3).fill(0).map((_, i) => (
-                                <div key={i} className="flex space-x-2 p-2">
-                                    <div className="font-semibold">username</div>
-                                    <div key={i}>This is Comment {i + 1}</div>
+                            comments.map((commentData) => (
+                                <div key={commentData.id} className="flex space-x-2 p-2">
+                                    <div className="font-semibold">{commentData.username}</div>
+                                    <div >{commentData.comment}</div>
                                 </div>
                             ))
                         }
                     </div>
                 </div>
                 <div className="p-2">3 Hours Ago</div>
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form onSubmit={handlePostComment}>
                     <div className="p-2 flex items-center  border-t py-4 justify-between">
                         <div className="flex items-center space-x-2">
                             <div><RiEmotionHappyLine size={30} /></div>
-                            <input type="text" name={`commment ${id}`} id={`commment ${id}`} placeholder="Add a Comment..." className="w-full outline-none" />
+                            <input 
+                            type="text"
+                             name={`commment ${id}`} 
+                             id={`commment ${id}`} 
+                             placeholder="Add a Comment..." 
+                             className="w-full outline-none" 
+                             ref={comment}/>
+                             
                         </div>
                         <div ><button type="submit" className="font-semibold text-blue-600">Post</button></div>
                     </div>
